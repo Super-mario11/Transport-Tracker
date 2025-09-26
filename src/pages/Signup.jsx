@@ -1,19 +1,18 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { FaUserPlus, FaBus } from "react-icons/fa"; // Added icons for flair
+import { FaUserPlus, FaBus } from "react-icons/fa";
 
-// --- Custom Colors (matching Login/Landing page) ---
-const PRIMARY_COLOR = "text-blue-700"; // Deep Blue
-const ACCENT_COLOR = "bg-cyan-500"; // Vibrant Cyan for CTA
+// --- Custom Colors ---
+const PRIMARY_COLOR = "text-blue-700";
+const ACCENT_COLOR = "bg-cyan-500";
 const HOVER_ACCENT = "hover:bg-cyan-600";
 const RING_FOCUS = "focus:ring-blue-500";
 const INPUT_BORDER = "border-gray-300";
 
 export default function Signup() {
   const navigate = useNavigate();
-  // Assuming AuthContext is correctly defined and available
-  const { signup, login } = useContext(AuthContext); 
+  const { signup } = useContext(AuthContext); 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,31 +21,32 @@ export default function Signup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
     if (password !== confirm) {
       setError("❌ Passwords do not match.");
       return;
     }
+
+    if (password.length < 6) {
+        setError("❌ Password must be at least 6 characters.");
+        return;
+    }
     
-    // Placeholder logic: call the actual signup function
-    const success = signup(email, password);
+    // Call the signup function
+    const result = signup(email, password);
     
-    if (success) {
-      // Auto-login after successful signup (assuming context handles this)
-      login(email, password);
-      navigate("/home"); // redirect to User Home Page
+    if (result.success) {
+      navigate("/home"); // Redirect to User Home Page
     } else {
-      // Handle actual error from signup (e.g., user exists)
-      setError("❌ Account creation failed. User may already exist.");
+      // Handle error from context (e.g., user exists)
+      setError(result.message || "❌ Account creation failed.");
     }
   };
 
   return (
-    // Background is light gray/white for a clean look
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
       <div
-        // Form card styling is consistent with Login
         className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-sm border border-gray-100 transform hover:shadow-3xl transition duration-300"
       >
         {/* Branding/Header Section */}
@@ -74,7 +74,7 @@ export default function Signup() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g., yourname@commuter.com"
+              placeholder="e.g., new.user@commuter.com"
               className={`w-full p-3 border ${INPUT_BORDER} rounded-lg shadow-sm focus:outline-none focus:ring-2 ${RING_FOCUS} focus:border-blue-500 transition`}
               required
             />
@@ -88,7 +88,7 @@ export default function Signup() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimum 8 characters"
+              placeholder="Minimum 6 characters"
               className={`w-full p-3 border ${INPUT_BORDER} rounded-lg shadow-sm focus:outline-none focus:ring-2 ${RING_FOCUS} focus:border-blue-500 transition`}
               required
             />
@@ -122,7 +122,7 @@ export default function Signup() {
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
           <button
-            type="button" // Use type="button" to prevent form submission
+            type="button"
             onClick={() => navigate("/login")}
             className={`font-semibold ${PRIMARY_COLOR} hover:underline`}
           >
