@@ -1,0 +1,12 @@
+/* Import Leaflet CSS first */
+@import "leaflet/dist/leaflet.css";
+@import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
+
+/* Then Tailwind directives */
+@import "tailwindcss";
+
+/* Optional: global styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
